@@ -33,11 +33,25 @@ st.markdown(
     [data-testid="stMetric"] {background: white; border: 1px solid #d9e2ec; border-radius: 10px; padding: 14px 16px;}
     [data-testid="stMetricLabel"] {color: #627d98;}
     [data-testid="stMetricValue"] {color: #102a43;}
-    .eyebrow {font-size: 0.78rem; font-weight: 700; color: #1f5aa6; letter-spacing: .09em; text-transform: uppercase;}
+    .eyebrow {
+        display: block;
+        min-height: 1.7rem;
+        padding: .28rem 0 .22rem;
+        margin: 0 0 .25rem;
+        overflow: visible;
+        font-size: .78rem;
+        font-weight: 700;
+        line-height: 1.55 !important;
+        color: #1f5aa6;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+    }
     .decision-box {background: #eaf2fb; border-left: 5px solid #1f5aa6; padding: 1rem 1.2rem; border-radius: 7px; margin: .6rem 0 1.2rem;}
     .risk-box {background: #fff6e5; border-left: 5px solid #b7791f; padding: .9rem 1.1rem; border-radius: 7px;}
     .small-note {color: #627d98; font-size: .88rem;}
     div[data-baseweb="tab-list"] {gap: 1.25rem;}
+    button[data-baseweb="tab"][aria-selected="true"] {color: #1f5aa6 !important;}
+    div[data-baseweb="tab-highlight"] {background-color: #1f5aa6 !important;}
     </style>
     """,
     unsafe_allow_html=True,
@@ -60,11 +74,19 @@ def weight_summary(weights: dict[str, float]) -> pd.DataFrame:
     )
 
 
+SHORT_SCENARIO_NAMES = {
+    "Urban instant delivery": "Instant delivery",
+    "Low-altitude digital infrastructure and services": "Digital services",
+    "Industrial inspection": "Inspection",
+    "Urban governance and emergency response": "Urban governance",
+    "Medical and emergency logistics": "Medical logistics",
+    "Tourism and passenger mobility": "Passenger mobility",
+}
+
+
 def priority_chart(ranked: pd.DataFrame) -> go.Figure:
     plot_frame = ranked.sort_values("weighted_score", ascending=True).copy()
-    plot_frame["Scenario"] = plot_frame["scenario"].replace(
-        {"Low-altitude digital infrastructure and services": "Digital infrastructure and services"}
-    )
+    plot_frame["Scenario"] = plot_frame["scenario"].replace(SHORT_SCENARIO_NAMES)
     plot_frame["Color"] = plot_frame["weighted_score"].map(
         lambda value: "Advance" if value >= 4 else "Assess" if value >= 3 else "Monitor"
     )
@@ -93,16 +115,7 @@ def priority_chart(ranked: pd.DataFrame) -> go.Figure:
 
 def opportunity_chart(ranked: pd.DataFrame) -> go.Figure:
     display = ranked.copy()
-    display["Short name"] = display["scenario"].replace(
-        {
-            "Urban instant delivery": "Instant delivery",
-            "Low-altitude digital infrastructure and services": "Digital services",
-            "Industrial inspection": "Inspection",
-            "Urban governance and emergency response": "Urban governance",
-            "Medical and emergency logistics": "Medical logistics",
-            "Tourism and passenger mobility": "Passenger mobility",
-        }
-    )
+    display["Short name"] = display["scenario"].replace(SHORT_SCENARIO_NAMES)
     fig = px.scatter(
         display,
         x="regulatory_feasibility_score",
@@ -199,7 +212,7 @@ overview_tab, sensitivity_tab, evidence_tab, pilot_tab, method_tab = st.tabs(
 with overview_tab:
     st.subheader("Current decision")
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Recommended first move", top["scenario"], help=top["suggested_posture"])
+    m1.metric("Recommended first move", SHORT_SCENARIO_NAMES[top["scenario"]], help=top["suggested_posture"])
     m2.metric("Leading score", f"{top['weighted_score']:.2f} / 5")
     m3.metric("Runner-up score", f"{runner_up['weighted_score']:.2f} / 5", help=runner_up["scenario"])
     m4.metric("Lead over runner-up", f"{score_gap:.2f} points")
