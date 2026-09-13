@@ -103,10 +103,22 @@ def make_priority_chart(ranked: pd.DataFrame) -> None:
 
 def make_opportunity_matrix(ranked: pd.DataFrame) -> None:
     fig, ax = plt.subplots(figsize=(9, 6.3))
+    point_offsets = {
+        "Urban instant delivery": (-0.10, 0.08),
+        "Low-altitude digital infrastructure and services": (0.10, -0.08),
+    }
+    plot_x = [
+        row["regulatory_feasibility_score"] + point_offsets.get(row["scenario"], (0, 0))[0]
+        for _, row in ranked.iterrows()
+    ]
+    plot_y = [
+        row["capability_fit_score"] + point_offsets.get(row["scenario"], (0, 0))[1]
+        for _, row in ranked.iterrows()
+    ]
     sizes = 130 + ranked["data_network_effect_score"] * 60
     scatter = ax.scatter(
-        ranked["regulatory_feasibility_score"],
-        ranked["capability_fit_score"],
+        plot_x,
+        plot_y,
         s=sizes,
         c=ranked["demand_score"],
         cmap="Blues",
@@ -124,17 +136,17 @@ def make_opportunity_matrix(ranked: pd.DataFrame) -> None:
         "Tourism and passenger mobility": "Passenger mobility",
     }
     label_offsets = {
-        "Urban instant delivery": (8, -12),
-        "Low-altitude digital infrastructure and services": (8, 10),
+        "Urban instant delivery": (-92, 10),
+        "Low-altitude digital infrastructure and services": (10, -17),
         "Industrial inspection": (8, 8),
         "Urban governance and emergency response": (8, 8),
         "Medical and emergency logistics": (8, 8),
         "Tourism and passenger mobility": (8, 8),
     }
-    for _, row in ranked.iterrows():
+    for point_index, (_, row) in enumerate(ranked.iterrows()):
         ax.annotate(
             short_labels[row["scenario"]],
-            (row["regulatory_feasibility_score"], row["capability_fit_score"]),
+            (plot_x[point_index], plot_y[point_index]),
             xytext=label_offsets[row["scenario"]],
             textcoords="offset points",
             fontsize=9,
@@ -142,14 +154,21 @@ def make_opportunity_matrix(ranked: pd.DataFrame) -> None:
     ax.axvline(3, color="#CBD5E1", linewidth=1)
     ax.axhline(3, color="#CBD5E1", linewidth=1)
     ax.set_xlim(0.7, 5.3)
-    ax.set_ylim(0.7, 5.3)
+    ax.set_ylim(0.7, 5.7)
     ax.set_xlabel("Regulatory feasibility score")
     ax.set_ylabel("Platform capability fit score")
     ax.set_title("Opportunity matrix")
     colorbar = fig.colorbar(scatter, ax=ax, pad=0.02)
     colorbar.set_label("Demand score")
     ax.grid(color="#F1F5F9", linewidth=0.7)
-    fig.tight_layout()
+    fig.text(
+        0.12,
+        0.01,
+        "Equal-position points are offset slightly for readability; labels retain the original scores.",
+        fontsize=8,
+        color="#64748B",
+    )
+    fig.tight_layout(rect=[0, 0.035, 1, 1])
     fig.savefig(FIGURE_DIR / "opportunity-matrix.png", dpi=180, bbox_inches="tight")
     plt.close(fig)
 

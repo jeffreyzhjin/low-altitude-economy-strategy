@@ -38,6 +38,13 @@ def build_decision_memo(
     """Create a concise Markdown record of the current decision view."""
     top = ranked.iloc[0]
     second = ranked.iloc[1]
+    tied = abs(float(top["weighted_score"]) - float(second["weighted_score"])) < 0.005
+    recommendation_note = (
+        f"The two leading scenarios are tied under this lens. Treat **{top['scenario']}** and "
+        f"**{second['scenario']}** as a joint shortlist and use pilot evidence to separate them."
+        if tied
+        else "The ranking is a screening result, not an investment forecast. A decision to proceed still requires a city- and route-level permission path, operating partner diligence, and unit-economics evidence."
+    )
     lines = [
         "# Low-altitude Economy Scenario Decision Memo",
         "",
@@ -48,7 +55,7 @@ def build_decision_memo(
         f"1. **{top['scenario']}** — {top['weighted_score']:.2f}/5; {top['suggested_posture']}.",
         f"2. **{second['scenario']}** — {second['weighted_score']:.2f}/5; {second['suggested_posture']}.",
         "",
-        "The ranking is a screening result, not an investment forecast. A decision to proceed still requires a city- and route-level permission path, operating partner diligence, and unit-economics evidence.",
+        recommendation_note,
         "",
         "## Weighting used",
         "",
@@ -91,4 +98,3 @@ def build_decision_memo(
         ]
     )
     return "\n".join(lines)
-

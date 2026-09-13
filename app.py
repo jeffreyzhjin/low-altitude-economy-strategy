@@ -116,33 +116,72 @@ def priority_chart(ranked: pd.DataFrame) -> go.Figure:
 def opportunity_chart(ranked: pd.DataFrame) -> go.Figure:
     display = ranked.copy()
     display["Short name"] = display["scenario"].replace(SHORT_SCENARIO_NAMES)
-    fig = px.scatter(
-        display,
-        x="regulatory_feasibility_score",
-        y="capability_fit_score",
-        size="demand_score",
-        color="weighted_score",
-        text="Short name",
-        hover_name="scenario",
-        hover_data={
-            "demand_score": True,
-            "commercialization_score": True,
-            "data_network_effect_score": True,
-            "weighted_score": ":.2f",
-            "Short name": False,
-        },
-        color_continuous_scale=[[0, "#d9e2ec"], [1, "#1f5aa6"]],
-        range_color=[1, 5],
-        size_max=28,
+    point_offsets = {
+        "Urban instant delivery": (-0.10, 0.08),
+        "Low-altitude digital infrastructure and services": (0.10, -0.08),
+    }
+    display["plot_x"] = display.apply(
+        lambda row: row["regulatory_feasibility_score"] + point_offsets.get(row["scenario"], (0, 0))[0],
+        axis=1,
     )
-    fig.update_traces(textposition="top center")
+    display["plot_y"] = display.apply(
+        lambda row: row["capability_fit_score"] + point_offsets.get(row["scenario"], (0, 0))[1],
+        axis=1,
+    )
+    text_positions = {
+        "Urban instant delivery": "top left",
+        "Low-altitude digital infrastructure and services": "bottom right",
+        "Industrial inspection": "top center",
+        "Urban governance and emergency response": "top center",
+        "Medical and emergency logistics": "top center",
+        "Tourism and passenger mobility": "top center",
+    }
+    display["text_position"] = display["scenario"].map(text_positions)
+    custom_data = display[
+        [
+            "scenario",
+            "regulatory_feasibility_score",
+            "capability_fit_score",
+            "demand_score",
+            "weighted_score",
+        ]
+    ]
+    fig = go.Figure(
+        go.Scatter(
+            x=display["plot_x"],
+            y=display["plot_y"],
+            mode="markers+text",
+            text=display["Short name"],
+            textposition=display["text_position"],
+            cliponaxis=False,
+            customdata=custom_data,
+            marker=dict(
+                size=display["demand_score"] * 8 + 8,
+                color=display["weighted_score"],
+                colorscale=[[0, "#d9e2ec"], [1, "#1f5aa6"]],
+                cmin=1,
+                cmax=5,
+                colorbar=dict(title="Weighted<br>score", thickness=16),
+                line=dict(color="white", width=1.5),
+                opacity=0.88,
+            ),
+            hovertemplate=(
+                "<b>%{customdata[0]}</b><br>"
+                "Regulatory feasibility: %{customdata[1]:.0f}<br>"
+                "Platform capability fit: %{customdata[2]:.0f}<br>"
+                "Demand: %{customdata[3]:.0f}<br>"
+                "Weighted score: %{customdata[4]:.2f}<extra></extra>"
+            ),
+        )
+    )
     fig.update_layout(
-        height=430,
-        margin=dict(l=15, r=15, t=30, b=20),
-        xaxis=dict(range=[0.6, 5.4], dtick=1, title="Regulatory feasibility"),
-        yaxis=dict(range=[0.6, 5.4], dtick=1, title="Platform capability fit"),
-        coloraxis_colorbar_title="Weighted<br>score",
+        height=460,
+        margin=dict(l=15, r=35, t=55, b=25),
+        xaxis=dict(range=[0.6, 5.4], dtick=1, title="Regulatory feasibility", fixedrange=True),
+        yaxis=dict(range=[0.6, 5.75], dtick=1, title="Platform capability fit", fixedrange=True),
         plot_bgcolor="white",
+        paper_bgcolor="white",
+        showlegend=False,
     )
     fig.add_vline(x=3, line_color="#d9e2ec")
     fig.add_hline(y=3, line_color="#d9e2ec")
@@ -193,6 +232,7 @@ ranked = score_scenarios(scenarios, weights).reset_index(drop=True)
 top = ranked.iloc[0]
 runner_up = ranked.iloc[1]
 score_gap = float(top["weighted_score"] - runner_up["weighted_score"])
+is_tied = score_gap < 0.005
 preset_matrix = ranking_matrix(scenarios, WEIGHT_SETS, score_scenarios)
 stable_top_two = all(
     set(preset_matrix[profile].nsmallest(2).index)
@@ -212,17 +252,32 @@ overview_tab, sensitivity_tab, evidence_tab, pilot_tab, method_tab = st.tabs(
 with overview_tab:
     st.subheader("Current decision")
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Recommended first move", SHORT_SCENARIO_NAMES[top["scenario"]], help=top["suggested_posture"])
+    m1.metric(
+        "Recommended first move",
+        "Joint shortlist" if is_tied else SHORT_SCENARIO_NAMES[top["scenario"]],
+        help=f"{top['scenario']} · {top['suggested_posture']}",
+    )
     m2.metric("Leading score", f"{top['weighted_score']:.2f} / 5")
     m3.metric("Runner-up score", f"{runner_up['weighted_score']:.2f} / 5", help=runner_up["scenario"])
     m4.metric("Lead over runner-up", f"{score_gap:.2f} points")
 
+    if is_tied:
+        decision_copy = (
+            f"<b>No clear lead under the {selected_profile.lower()} lens</b><br>"
+            f"<b>{top['scenario']}</b> and <b>{runner_up['scenario']}</b> are tied at "
+            f"{top['weighted_score']:.2f}. Treat them as a joint shortlist and use pilot evidence to separate them."
+        )
+    else:
+        decision_copy = (
+            f"<b>Recommendation under the {selected_profile.lower()} lens</b><br>"
+            f"Start with <b>{top['scenario']}</b>. The suggested posture is "
+            f"<b>{top['suggested_posture'].lower()}</b>. Keep <b>{runner_up['scenario']}</b> "
+            "as the second workstream rather than treating the sector as one large market bet."
+        )
     st.markdown(
         f"""
         <div class="decision-box">
-        <b>Recommendation under the {selected_profile.lower()} lens</b><br>
-        Start with <b>{top['scenario']}</b>. The suggested posture is <b>{top['suggested_posture'].lower()}</b>.
-        Keep <b>{runner_up['scenario']}</b> as the second workstream rather than treating the sector as one large market bet.
+        {decision_copy}
         </div>
         """,
         unsafe_allow_html=True,
@@ -245,6 +300,7 @@ with overview_tab:
     st.divider()
     st.markdown("#### Opportunity map")
     st.plotly_chart(opportunity_chart(ranked), use_container_width=True, config={"displayModeBar": False})
+    st.caption("Bubble size represents demand score. The two equal-position points at the top are offset slightly so both scenarios remain visible; hover labels report the original scores.")
 
 with sensitivity_tab:
     st.subheader("Does the recommendation survive a different strategy lens?")

@@ -57,6 +57,14 @@ class ScenarioScoringTests(unittest.TestCase):
         self.assertIn("Urban instant delivery", memo)
         self.assertIn("screening result, not an investment forecast", memo)
 
+    def test_decision_memo_handles_tied_leaders(self):
+        weights = normalize_weights(
+            {key: (100 if key == "capability_fit_score" else 0) for key in CRITERIA}
+        )
+        ranked = score_scenarios(self.frame, weights)
+        memo = build_decision_memo(ranked, "Custom", weights, CRITERIA)
+        self.assertIn("joint shortlist", memo)
+
 
 if __name__ == "__main__":
     unittest.main()
