@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "analysis"))
 
 from scenario_scoring import CRITERIA, WEIGHT_SETS, score_scenarios, validate_weights
+from decision_support import build_decision_memo, normalize_weights, ranking_matrix
 
 
 class ScenarioScoringTests(unittest.TestCase):
@@ -35,7 +36,27 @@ class ScenarioScoringTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             score_scenarios(invalid, WEIGHT_SETS["Base case"])
 
+    def test_custom_weights_are_normalized(self):
+        normalized = normalize_weights({key: 20 for key in CRITERIA})
+        self.assertAlmostEqual(sum(normalized.values()), 1.0)
+        self.assertTrue(all(value == 0.2 for value in normalized.values()))
+
+    def test_zero_custom_weights_raise(self):
+        with self.assertRaises(ValueError):
+            normalize_weights({key: 0 for key in CRITERIA})
+
+    def test_predefined_profiles_keep_same_top_two(self):
+        matrix = ranking_matrix(self.frame, WEIGHT_SETS, score_scenarios)
+        expected = {"Urban instant delivery", "Low-altitude digital infrastructure and services"}
+        for profile in matrix.columns:
+            self.assertEqual(set(matrix[profile].nsmallest(2).index), expected)
+
+    def test_decision_memo_includes_ranking_and_caveat(self):
+        ranked = score_scenarios(self.frame, WEIGHT_SETS["Base case"])
+        memo = build_decision_memo(ranked, "Base case", WEIGHT_SETS["Base case"], CRITERIA)
+        self.assertIn("Urban instant delivery", memo)
+        self.assertIn("screening result, not an investment forecast", memo)
+
 
 if __name__ == "__main__":
     unittest.main()
-

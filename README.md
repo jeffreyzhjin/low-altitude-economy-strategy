@@ -4,6 +4,23 @@ Which low-altitude economy scenarios should an internet or technology platform e
 
 This portfolio project turns policy, industry operating data, and company cases into a transparent scenario-prioritization model. It is written from the perspective of a hypothetical platform company with user traffic, merchant relationships, maps and location services, cloud and AI capabilities, dispatch systems, and operations teams.
 
+## Interactive strategy simulator
+
+The Streamlit app lets a reviewer switch among four strategy lenses or set custom criterion weights. It recalculates the six-scenario ranking, shows why each scenario moves, exposes the supporting evidence and risks, and exports a concise decision memo.
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+The simulator does not generate new facts or recommendations with an AI model. Every result comes from the visible CSV scores, selected weights, and documented rules in this repository.
+
+### Deploy on Streamlit Community Cloud
+
+1. Select this GitHub repository.
+2. Use the `main` branch and `app.py` as the entrypoint.
+3. Deploy without adding secrets; the app uses only repository data.
+
 ## Decision summary
 
 The base-case model prioritizes two directions:
@@ -14,6 +31,14 @@ The base-case model prioritizes two directions:
 Industrial inspection and urban governance are credible partnership-led opportunities. Medical and emergency logistics has clear social value but requires tighter operating safeguards. Passenger mobility is not recommended as the first entry because its regulatory, safety, infrastructure, and capital requirements are materially higher.
 
 Scores are analyst judgments on a 1–5 scale. They are not market forecasts. Facts, sources, assumptions, and judgment calls are kept separate so another analyst can challenge or update the conclusion.
+
+## Selected outputs
+
+[Strategy brief (PDF)](report/low-altitude-economy-strategy-brief.pdf) · [Editable Excel decision model](model/low-altitude-scenario-model.xlsx) · [Methodology](docs/methodology.md)
+
+![Base-case scenario ranking](figures/scenario-priority.png)
+
+![Scenario opportunity matrix](figures/opportunity-matrix.png)
 
 ## Base-case ranking
 
@@ -39,7 +64,9 @@ Scores are analyst judgments on a 1–5 scale. They are not market forecasts. Fa
 ```text
 low-altitude-economy-strategy/
 ├── README.md
+├── app.py
 ├── analysis/
+│   ├── decision_support.py
 │   └── scenario_scoring.py
 ├── data/
 │   ├── scenario-scoring.csv
@@ -53,6 +80,7 @@ low-altitude-economy-strategy/
 ├── model/
 │   └── low-altitude-scenario-model.xlsx
 ├── report/
+│   ├── low-altitude-economy-strategy-brief.pdf
 │   └── strategy-brief.md
 ├── tests/
 │   └── test_scoring.py
@@ -66,6 +94,12 @@ low-altitude-economy-strategy/
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+streamlit run app.py
+```
+
+To reproduce the static ranking, sensitivity table, and figures:
+
+```bash
 python analysis/scenario_scoring.py
 python -m unittest discover -s tests
 ```
@@ -81,4 +115,3 @@ The script writes two figures and a sensitivity-analysis CSV. The Excel model co
 ## Author
 
 ZHANG JIN · Renmin University of China
-
