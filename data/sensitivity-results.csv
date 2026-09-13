@@ -1,0 +1,25 @@
+profile,scenario_id,scenario,weighted_score,rank
+Base case,S01,Urban instant delivery,4.4,1
+Base case,S02,Low-altitude digital infrastructure and services,4.0,2
+Base case,S03,Industrial inspection,3.6000000000000005,3
+Base case,S04,Urban governance and emergency response,3.6000000000000005,3
+Base case,S05,Medical and emergency logistics,3.4000000000000004,5
+Base case,S06,Tourism and passenger mobility,2.0,6
+Growth platform,S01,Urban instant delivery,4.6,1
+Growth platform,S02,Low-altitude digital infrastructure and services,4.15,2
+Growth platform,S04,Urban governance and emergency response,3.7000000000000006,3
+Growth platform,S03,Industrial inspection,3.55,4
+Growth platform,S05,Medical and emergency logistics,3.45,5
+Growth platform,S06,Tourism and passenger mobility,2.15,6
+Compliance first,S01,Urban instant delivery,4.15,1
+Compliance first,S02,Low-altitude digital infrastructure and services,3.8499999999999996,2
+Compliance first,S03,Industrial inspection,3.6500000000000004,3
+Compliance first,S04,Urban governance and emergency response,3.4999999999999996,4
+Compliance first,S05,Medical and emergency logistics,3.3,5
+Compliance first,S06,Tourism and passenger mobility,1.8,6
+Asset light,S01,Urban instant delivery,4.45,1
+Asset light,S02,Low-altitude digital infrastructure and services,4.05,2
+Asset light,S04,Urban governance and emergency response,3.6,3
+Asset light,S03,Industrial inspection,3.55,4
+Asset light,S05,Medical and emergency logistics,3.4000000000000004,5
+Asset light,S06,Tourism and passenger mobility,1.9999999999999998,6
