@@ -4,6 +4,18 @@ Which low-altitude economy scenarios should an internet or technology platform e
 
 This portfolio project turns policy, industry operating data, and company cases into a transparent scenario-prioritization model. It is written from the perspective of a hypothetical platform company with user traffic, merchant relationships, maps and location services, cloud and AI capabilities, dispatch systems, and operations teams.
 
+[**Open the live simulator**](https://zhang-jin-low-altitude-strategy.streamlit.app/) · [Strategy brief (PDF)](report/low-altitude-economy-strategy-brief.pdf) · [Editable decision model](model/low-altitude-scenario-model.xlsx) · [Methodology](docs/methodology.md)
+
+## Product screenshots
+
+**Decision view — scenario ranking, recommendation, and first-test logic**
+
+[![Decision view of the low-altitude economy strategy simulator](screenshots/01-decision-view.png)](https://zhang-jin-low-altitude-strategy.streamlit.app/)
+
+**Opportunity map — regulatory feasibility, platform fit, and weighted score**
+
+[![Opportunity map in the low-altitude economy strategy simulator](screenshots/02-opportunity-map.png)](https://zhang-jin-low-altitude-strategy.streamlit.app/)
+
 ## Interactive strategy simulator
 
 The Streamlit app lets a reviewer switch among four strategy lenses or set custom criterion weights. It recalculates the six-scenario ranking, shows why each scenario moves, exposes the supporting evidence and risks, and exports a concise decision memo.
@@ -34,7 +46,7 @@ Scores are analyst judgments on a 1–5 scale. They are not market forecasts. Fa
 
 ## Selected outputs
 
-[Strategy brief (PDF)](report/low-altitude-economy-strategy-brief.pdf) · [Editable Excel decision model](model/low-altitude-scenario-model.xlsx) · [Methodology](docs/methodology.md)
+[Strategy brief (PDF)](report/low-altitude-economy-strategy-brief.pdf) · [Editable Excel decision model](model/low-altitude-scenario-model.xlsx) · [Methodology](docs/methodology.md) · [Live simulator](https://zhang-jin-low-altitude-strategy.streamlit.app/)
 
 ![Base-case scenario ranking](figures/scenario-priority.png)
 
@@ -82,6 +94,9 @@ low-altitude-economy-strategy/
 ├── report/
 │   ├── low-altitude-economy-strategy-brief.pdf
 │   └── strategy-brief.md
+├── screenshots/
+│   ├── 01-decision-view.png
+│   └── 02-opportunity-map.png
 ├── tests/
 │   └── test_scoring.py
 ├── LICENSE
@@ -114,4 +129,4 @@ The script writes two figures and a sensitivity-analysis CSV. The Excel model co
 
 ## Author
 
-ZHANG JIN · Renmin University of China
+ZHANG JIN · Northeastern University · Incoming graduate student at Renmin University of China (2027)
