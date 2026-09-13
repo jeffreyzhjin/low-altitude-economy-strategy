@@ -2,17 +2,21 @@
 
 Which low-altitude economy scenarios should an internet or technology platform enter first?
 
-This portfolio project turns policy, industry operating data, and company cases into a transparent scenario-prioritization model. It is written from the perspective of a hypothetical platform company with user traffic, merchant relationships, maps and location services, cloud and AI capabilities, dispatch systems, and operations teams.
+This portfolio project turns policy, industry operating data, and company cases into a transparent scenario-prioritization model. It takes the perspective of a hypothetical platform company with user traffic, merchant relationships, maps and location services, cloud and AI capabilities, dispatch systems, and operations teams.
 
 [**Open the live simulator**](https://zhang-jin-low-altitude-strategy.streamlit.app/) · [Strategy brief (PDF)](report/low-altitude-economy-strategy-brief.pdf) · [Editable decision model](model/low-altitude-scenario-model.xlsx) · [Methodology](docs/methodology.md)
 
 ## Product screenshots
 
-**Decision view — scenario ranking, recommendation, and first-test logic**
+### Decision view
+
+Scenario ranking, recommended entry sequence, and first-test logic.
 
 [![Decision view of the low-altitude economy strategy simulator](screenshots/01-decision-view.png)](https://zhang-jin-low-altitude-strategy.streamlit.app/)
 
-**Opportunity map — regulatory feasibility, platform fit, and weighted score**
+### Opportunity map
+
+Comparison of regulatory feasibility, platform capability fit, demand, and weighted score.
 
 [![Opportunity map in the low-altitude economy strategy simulator](screenshots/02-opportunity-map.png)](https://zhang-jin-low-altitude-strategy.streamlit.app/)
 
@@ -20,18 +24,7 @@ This portfolio project turns policy, industry operating data, and company cases 
 
 The Streamlit app lets a reviewer switch among four strategy lenses or set custom criterion weights. It recalculates the six-scenario ranking, shows why each scenario moves, exposes the supporting evidence and risks, and exports a concise decision memo.
 
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
 The simulator does not generate new facts or recommendations with an AI model. Every result comes from the visible CSV scores, selected weights, and documented rules in this repository.
-
-### Deploy on Streamlit Community Cloud
-
-1. Select this GitHub repository.
-2. Use the `main` branch and `app.py` as the entrypoint.
-3. Deploy without adding secrets; the app uses only repository data.
 
 ## Decision summary
 
@@ -42,9 +35,9 @@ The base-case model prioritizes two directions:
 
 Industrial inspection and urban governance are credible partnership-led opportunities. Medical and emergency logistics has clear social value but requires tighter operating safeguards. Passenger mobility is not recommended as the first entry because its regulatory, safety, infrastructure, and capital requirements are materially higher.
 
-Scores are analyst judgments on a 1–5 scale. They are not market forecasts. Facts, sources, assumptions, and judgment calls are kept separate so another analyst can challenge or update the conclusion.
+Scores are analyst judgments on a 1–5 scale, not market forecasts. Facts, sources, assumptions, and judgment calls are kept separate so another analyst can challenge or update the conclusion. Evidence and assumptions are current to 13 September 2026.
 
-## Selected outputs
+## Selected analytical outputs
 
 [Strategy brief (PDF)](report/low-altitude-economy-strategy-brief.pdf) · [Editable Excel decision model](model/low-altitude-scenario-model.xlsx) · [Methodology](docs/methodology.md) · [Live simulator](https://zhang-jin-low-altitude-strategy.streamlit.app/)
 
@@ -81,7 +74,9 @@ low-altitude-economy-strategy/
 │   ├── decision_support.py
 │   └── scenario_scoring.py
 ├── data/
+│   ├── base-case-ranking.csv
 │   ├── scenario-scoring.csv
+│   ├── sensitivity-results.csv
 │   └── source-ledger.csv
 ├── docs/
 │   ├── assumptions-and-limitations.md
@@ -106,10 +101,8 @@ low-altitude-economy-strategy/
 ## Run locally
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-streamlit run app.py
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
 ```
 
 To reproduce the static ranking, sensitivity table, and figures:
@@ -121,12 +114,11 @@ python -m unittest discover -s tests
 
 The script writes two figures and a sensitivity-analysis CSV. The Excel model contains editable weights, formula-driven scores, a source ledger, and a concise summary.
 
-## 中文说明
+## Deployment
 
-本项目回答一个具体问题：如果一家拥有用户、商家、地图、云服务、调度和运营能力的互联网或科技平台进入低空经济，应该优先选择哪些业务场景？
-
-结论不是“哪个行业最热门”，而是“哪个场景与平台能力最匹配、商业路径最清晰、监管风险相对可控”。基础模型建议优先验证城市即时配送与低空数字基础设施服务，谨慎评估工业巡检、城市治理和医疗应急物流，暂不把载人文旅作为第一进入场景。
+On Streamlit Community Cloud, select this repository, use the `main` branch, and set `app.py` as the entrypoint. No secrets are required because the application uses only repository data.
 
 ## Author
 
-ZHANG JIN · Northeastern University · Incoming graduate student at Renmin University of China (2027)
+**ZHANG JIN**  
+Northeastern University · Renmin University of China
